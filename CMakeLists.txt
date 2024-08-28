@@ -26,18 +26,24 @@
 
 cmake_minimum_required(VERSION 3.22.1)
 
+include(FetchContent)
+Set(FETCHCONTENT_QUIET FALSE)
+
 # Generic build flags
 set(CMAKE_C_FLAGS "" CACHE STRING "C flags to be used in the build")
 
 message(STATUS "Configuring for target platform: ${CMAKE_SYSTEM_NAME}")
 
 # Engine build flags
-set(YOYO_ENGINE_SOURCE_DIR ${CMAKE_SOURCE_DIR}/../yoyoengine/engine CACHE STRING "The source directory of the engine")
 set(YOYO_ENGINE_BUILD_RELEASE off CACHE BOOL "Build the engine in debug mode")
 
 # Game build flags
 set(GAME_NAME "yoyoengine_game" CACHE STRING "The name of the game")
 set(GAME_RC_PATH "" CACHE STRING "The path to the rc icon file")
+
+# we don't build the lua runtime from the game,
+# the editor builds it and packs it into the yep for us
+set(BUILD_LUA_RUNTIME off CACHE BOOL "Build the Lua runtime")
 
 #############################################
 #               Configure Game              #
@@ -71,8 +77,17 @@ else()
     message(FATAL_ERROR "Invalid target platform: ${CMAKE_SYSTEM_NAME}")
 endif()
 
-# Include the engine
-add_subdirectory(${YOYO_ENGINE_SOURCE_DIR} yoyoengine)
+# Grab the engine from github
+# TODO: pin this to a tag?
+FetchContent_Declare(
+    yoyoengine
+    GIT_REPOSITORY https://github.com/yoyoengine/yoyoengine.git
+    GIT_TAG main
+    GIT_PROGRESS TRUE
+)
+# A little jank... but it works
+FetchContent_MakeAvailable(yoyoengine)
+add_subdirectory(${yoyoengine_SOURCE_DIR}/engine)
 
 # Build the game
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src/*.c)
@@ -122,9 +137,6 @@ endif()
 target_link_libraries(${GAME_NAME} PRIVATE yoyoengine)
 include_directories(${CMAKE_SOURCE_DIR}/custom/include)
 
-# most includes are provided by the engine public targets, but there are header only libs we also need
-target_include_directories(${GAME_NAME} PRIVATE ${YOYO_ENGINE_SOURCE_DIR}/dist/include)
-
 # output the game in the bin directory
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
@@ -140,6 +152,10 @@ endif()
 #############################################
 #             Post Build Copying            #
 #############################################
+
+# WARNING: this will fail if you do not have yep files to copy!
+# The game depends on at the last, engine.yep! If you are building
+# from outside of the editor context, you will need to create engine.yep!
 
 # on every single build (not just configure) copy ${CMAKE_SOURCE_DIR}/*.yep into GAME_BUILD_DESTINATION
 # TODO: make me incremental
