@@ -3,5 +3,6 @@
 
     "platform":"linux",
     "cflags":"-Wall -Wextra -g",
-    "rc_path":""
+    "rc_path":"",
+    "delete_cache":true
 }
