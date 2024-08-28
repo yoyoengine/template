@@ -188,6 +188,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
         COMMENT "Performing Windows Cleanup ..."
     )
+    add_dependencies(windows_cleanup copy_yep_files copy_settings_yoyo yoyoengine ${GAME_NAME})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     # emscripten specific cleanup
     add_custom_target(emscripten_cleanup ALL
