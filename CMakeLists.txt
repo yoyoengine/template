@@ -77,6 +77,11 @@ else()
     message(FATAL_ERROR "Invalid target platform: ${CMAKE_SYSTEM_NAME}")
 endif()
 
+# Build the game
+file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src/*.c)
+
+add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
+
 # Grab the engine from github
 # TODO: pin this to a tag?
 FetchContent_Declare(
@@ -88,11 +93,6 @@ FetchContent_Declare(
 # A little jank... but it works
 FetchContent_MakeAvailable(yoyoengine)
 add_subdirectory(${yoyoengine_SOURCE_DIR}/engine)
-
-# Build the game
-file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src/*.c)
-
-add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
 
 # set some emscripten specific build flags
 if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
@@ -138,9 +138,7 @@ target_link_libraries(${GAME_NAME} PRIVATE yoyoengine)
 include_directories(${CMAKE_SOURCE_DIR}/custom/include)
 
 # output the game in the bin directory
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
-endif()
+set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
 
 # set rpath for Linux (will allow the game to find the engine shared library on every system)
 if(UNIX)
@@ -186,7 +184,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/lib
         
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/tricks/* ${CMAKE_BINARY_DIR}/bin/Windows || true
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/tricks
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/tricks || true
 
         COMMENT "Performing Windows Cleanup ..."
     )
