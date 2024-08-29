@@ -17,7 +17,7 @@
 # Example Usage:
 #
 # mkdir build && cd build
-# cmake -DYOYO_ENGINE_SOURCE_DIR=XXXXXX -DGAME_NAME=XXXXXXX -DGAME_CFLAGS -DCMAKE_TOOLCHAIN_FILE=/path/to/toolchain.cmake ..
+# cmake -DGAME_NAME=XXXXXXX -DGAME_CFLAGS -DCMAKE_TOOLCHAIN_FILE=/path/to/toolchain.cmake ..
 #
 
 #############################################
@@ -44,6 +44,11 @@ set(GAME_RC_PATH "" CACHE STRING "The path to the rc icon file")
 # we don't build the lua runtime from the game,
 # the editor builds it and packs it into the yep for us
 set(BUILD_LUA_RUNTIME off CACHE BOOL "Build the Lua runtime")
+
+# Set YOYO_ENGINE_BUILD_TAG to main if unset
+if(NOT DEFINED YOYO_ENGINE_BUILD_TAG)
+    set(YOYO_ENGINE_BUILD_TAG "main" CACHE STRING "Tag for yoyoengine")
+endif()
 
 #############################################
 #               Configure Game              #
@@ -87,7 +92,7 @@ add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PAT
 FetchContent_Declare(
     yoyoengine
     GIT_REPOSITORY https://github.com/yoyoengine/yoyoengine.git
-    GIT_TAG main
+    GIT_TAG ${YOYO_ENGINE_BUILD_TAG}
     GIT_PROGRESS TRUE
 )
 # A little jank... but it works
