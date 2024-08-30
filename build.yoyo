@@ -2,6 +2,7 @@
     "IMPORTANT NOTICE":"DO NOT EDIT THESE DIRECTLY OR DELETE THEM, PLEASE CONFIGURE PROJECTS THROUGH THE EDITOR (unless you are going to programatically change these and know what youre doing.",
 
     "platform":"linux",
+    "core_tag":"build-0",
     "cflags":"-Wall -Wextra -g",
     "rc_path":"",
     "delete_cache":true
