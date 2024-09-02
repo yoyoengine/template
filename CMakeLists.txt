@@ -7,9 +7,6 @@
 #
 # I'm going to write a pure CMake build system, and start with the basics and leave more advanced things to implement later.
 #
-# TODO:
-# - Tricks
-#
 # Notes:
 # - we use Cmake's build types to automatically declare debug/release
 # - when we add toolchains, we will need to set them as a var and include() them after we set all our other vars
@@ -88,7 +85,6 @@ file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src
 add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
 
 # Grab the engine from github
-# TODO: pin this to a tag?
 FetchContent_Declare(
     yoyoengine
     GIT_REPOSITORY https://github.com/yoyoengine/yoyoengine.git
