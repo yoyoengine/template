@@ -5,5 +5,7 @@
     "core_tag":"build-0",
     "cflags":"-Wall -Wextra -g",
     "rc_path":"",
+    "use_local_engine":false,
+    "local_engine_path":"",
     "delete_cache":true
 }

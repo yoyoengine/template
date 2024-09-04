@@ -84,16 +84,20 @@ file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src
 
 add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
 
-# Grab the engine from github
-FetchContent_Declare(
-    yoyoengine
-    GIT_REPOSITORY https://github.com/yoyoengine/yoyoengine.git
-    GIT_TAG ${YOYO_ENGINE_BUILD_TAG}
-    GIT_PROGRESS TRUE
-)
-# A little jank... but it works
-FetchContent_MakeAvailable(yoyoengine)
-add_subdirectory(${yoyoengine_SOURCE_DIR}/engine)
+# We either use a local copy, or grab the engine from the specified tag
+if(YOYO_ENGINE_SOURCE_DIR)
+    add_subdirectory(${YOYO_ENGINE_SOURCE_DIR} yoyoengine-local)
+else()
+    # Grab the engine from github
+    FetchContent_Declare(
+        yoyoengine
+        GIT_REPOSITORY https://github.com/yoyoengine/yoyoengine.git
+        GIT_TAG ${YOYO_ENGINE_BUILD_TAG}
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(yoyoengine)
+    add_subdirectory(${yoyoengine_SOURCE_DIR}/engine yoyoengine)
+endif()
 
 # set some emscripten specific build flags
 if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
