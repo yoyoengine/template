@@ -82,6 +82,14 @@ endif()
 # Build the game
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src/*.c)
 
+# set rpath for Linux (will allow the game to find the engine shared library on every system)
+# note: THIS MUST OCCUR BEFORE add_executable!
+if(UNIX)
+    set(CMAKE_SKIP_BUILD_RPATH FALSE)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+    set(CMAKE_INSTALL_RPATH $ORIGIN/lib)
+endif()
+
 add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
 
 # We either use a local copy, or grab the engine from the specified tag
@@ -144,13 +152,6 @@ include_directories(${CMAKE_SOURCE_DIR}/custom/include)
 
 # output the game in the bin directory
 set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
-
-# set rpath for Linux (will allow the game to find the engine shared library on every system)
-if(UNIX)
-    set(CMAKE_SKIP_BUILD_RPATH FALSE)
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-    set(CMAKE_INSTALL_RPATH $ORIGIN/lib)
-endif()
 
 #############################################
 #             Post Build Copying            #
