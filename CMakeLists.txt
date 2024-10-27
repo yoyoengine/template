@@ -185,8 +185,7 @@ add_custom_target(copy_settings_yoyo ALL
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # windows specific cleanup
     add_custom_target(windows_cleanup ALL
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/lib/libyoyoengine.dll ${CMAKE_BINARY_DIR}/bin/Windows
-        COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Windows/libyoyoengine.dll.a
+        # COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Windows/libyoyoengine.dll.a
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/lib
         
         COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/tricks/* ${CMAKE_BINARY_DIR}/bin/Windows || true
