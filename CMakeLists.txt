@@ -83,6 +83,12 @@ endif()
 # Build the game
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src/*.c)
 
+## rpath on linux ##
+SET(CMAKE_SKIP_BUILD_RPATH FALSE)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+SET(CMAKE_INSTALL_RPATH $ORIGIN/lib)
+####################
+
 # force SDL_net specifically to not think we are unix
 if(MSVC)
     add_compile_definitions(WIN32)
