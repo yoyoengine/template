@@ -165,19 +165,18 @@ set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_B
 # The game depends on at the last, engine.yep! If you are building
 # from outside of the editor context, you will need to create engine.yep!
 
+# on every single build (not just configure) copy ${CMAKE_SOURCE_DIR}/*.yep into GAME_BUILD_DESTINATION
 file(GLOB YEP_FILES "${CMAKE_SOURCE_DIR}/*.yep")
 foreach(YEP_FILE ${YEP_FILES})
     message(STATUS "Adding yep file: ${YEP_FILE}")
     get_filename_component(YEP_FILENAME ${YEP_FILE} NAME)
     add_custom_command(
-        OUTPUT "${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${YEP_FILENAME}"
+        TARGET ${GAME_NAME}
+        POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${YEP_FILE} "${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/"
         COMMENT "Copying ${YEP_FILE} to output directory"
     )
-    list(APPEND YEP_OUTPUTS "${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${YEP_FILENAME}")
 endforeach()
-add_custom_target(copy_yep_files ALL DEPENDS ${YEP_OUTPUTS})
-add_dependencies(${GAME_NAME} copy_yep_files)
 
 # on every single build, copy settings.yoyo into GAME_BUILD_DESTINATION
 add_custom_target(copy_settings_yoyo ALL
