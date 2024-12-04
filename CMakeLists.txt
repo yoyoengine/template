@@ -238,7 +238,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 else()
     add_custom_target(run
         COMMAND ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME} &
-        COMMAND /home/ryan/repos/fighting-game/utils/localcopy.sh &
         # DEPENDS ${GAME_NAME}
         COMMENT "Running the game and remote copy ..."
     )
