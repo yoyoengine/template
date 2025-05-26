@@ -89,10 +89,11 @@ SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 SET(CMAKE_INSTALL_RPATH $ORIGIN/lib)
 ####################
 
-# force SDL_net specifically to not think we are unix
-if(MSVC)
-    add_compile_definitions(WIN32)
-endif()
+# TODO: re-evaluate if this is needed (we removed net)
+# # force SDL_net specifically to not think we are unix
+# if(MSVC)
+#     add_compile_definitions(WIN32)
+# endif()
 
 add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
 
