@@ -37,7 +37,7 @@ void example_scene_load(char *scene_name){
     note: if you delete this, you must re-implement a handler for SDL_QUIT.
 */
 void handle_input(SDL_Event event){
-    if(event.type == SDL_QUIT){
+    if(event.type == SDL_EVENT_QUIT){
         YG_RUNNING = false;
     }
 }
