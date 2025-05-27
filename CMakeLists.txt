@@ -118,35 +118,35 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
-#############################################
-#              Tricks / Plugins             #
-#############################################
+# #############################################
+# #              Tricks / Plugins             #
+# #############################################
 
-# if not on emscripten
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
+# # if not on emscripten
+# if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 
-    message(STATUS "Adding tricks ...")
+#     message(STATUS "Adding tricks ...")
 
-    # set some vars for the tricks
-    set(YOYO_TRICK_BUILD_DIR ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/tricks)
-    file(MAKE_DIRECTORY ${YOYO_TRICK_BUILD_DIR})
+#     # set some vars for the tricks
+#     set(YOYO_TRICK_BUILD_DIR ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/tricks)
+#     file(MAKE_DIRECTORY ${YOYO_TRICK_BUILD_DIR})
 
-    set(YOYO_GAME_LINK_DIR ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
-    target_link_directories(${GAME_NAME} PRIVATE ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/tricks)
+#     set(YOYO_GAME_LINK_DIR ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
+#     target_link_directories(${GAME_NAME} PRIVATE ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/tricks)
 
-    file(GLOB PLUGIN_DIRS CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tricks/*")
-    foreach(PLUGIN_DIR ${PLUGIN_DIRS})
-        if(IS_DIRECTORY ${PLUGIN_DIR})
-            get_filename_component(PLUGIN_NAME ${PLUGIN_DIR} NAME)
-            message(STATUS "Adding trick: ${PLUGIN_NAME}")
-            add_subdirectory(${PLUGIN_DIR})
-            target_include_directories(${GAME_NAME} PRIVATE ${PLUGIN_DIR}/include)
-            add_dependencies(${PLUGIN_NAME} yoyoengine)
-            target_link_libraries(${GAME_NAME} PRIVATE ${PLUGIN_NAME})
-        endif()
-    endforeach()
+#     file(GLOB PLUGIN_DIRS CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tricks/*")
+#     foreach(PLUGIN_DIR ${PLUGIN_DIRS})
+#         if(IS_DIRECTORY ${PLUGIN_DIR})
+#             get_filename_component(PLUGIN_NAME ${PLUGIN_DIR} NAME)
+#             message(STATUS "Adding trick: ${PLUGIN_NAME}")
+#             add_subdirectory(${PLUGIN_DIR})
+#             target_include_directories(${GAME_NAME} PRIVATE ${PLUGIN_DIR}/include)
+#             add_dependencies(${PLUGIN_NAME} yoyoengine)
+#             target_link_libraries(${GAME_NAME} PRIVATE ${PLUGIN_NAME})
+#         endif()
+#     endforeach()
 
-endif()
+# endif()
 
 #############################################
 #           Finish Configuring Game         #
