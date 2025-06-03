@@ -35,6 +35,10 @@ set(CMAKE_C_FLAGS "" CACHE STRING "C flags to be used in the build")
 
 message(STATUS "Configuring for target platform: ${CMAKE_SYSTEM_NAME}")
 
+# Engine does this implicitly, but some platforms require this here
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
 # Game build flags
 set(GAME_NAME "yoyoengine_game" CACHE STRING "The name of the game")
 set(GAME_RC_PATH "" CACHE STRING "The path to the rc icon file")
