@@ -30,21 +30,19 @@ endif()
 include(FetchContent)
 Set(FETCHCONTENT_QUIET FALSE)
 
-# Generic build flags
+# TODO: removeme? -- Generic build flags
 set(CMAKE_C_FLAGS "" CACHE STRING "C flags to be used in the build")
 
 message(STATUS "Configuring for target platform: ${CMAKE_SYSTEM_NAME}")
-
-# Engine build flags
-set(YOYO_ENGINE_BUILD_RELEASE off CACHE BOOL "Build the engine in debug mode")
 
 # Game build flags
 set(GAME_NAME "yoyoengine_game" CACHE STRING "The name of the game")
 set(GAME_RC_PATH "" CACHE STRING "The path to the rc icon file")
 
+# TODO: disabled because we are phasing out yoyolua api
 # we don't build the lua runtime from the game,
 # the editor builds it and packs it into the yep for us
-set(BUILD_LUA_RUNTIME off CACHE BOOL "Build the Lua runtime")
+# set(BUILD_LUA_RUNTIME off CACHE BOOL "Build the Lua runtime")
 
 # Set YOYO_ENGINE_BUILD_TAG to main if unset
 if(NOT DEFINED YOYO_ENGINE_BUILD_TAG)
@@ -58,6 +56,7 @@ endif()
 # Declare the game
 project(${GAME_NAME})
 
+# TODO: is this needed?
 # append CUSTOM_CFLAGS to CMAKE_C_FLAGS
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CUSTOM_CFLAGS}")
 
@@ -86,7 +85,8 @@ file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src
 ## rpath on linux ##
 SET(CMAKE_SKIP_BUILD_RPATH FALSE)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-SET(CMAKE_INSTALL_RPATH $ORIGIN/lib)
+SET(CMAKE_INSTALL_RPATH $ORIGIN)
+# SET(CMAKE_INSTALL_RPATH $ORIGIN/lib)
 ####################
 
 # TODO: re-evaluate if this is needed (we removed net)
@@ -128,11 +128,11 @@ endif()
 #     message(STATUS "Adding tricks ...")
 
 #     # set some vars for the tricks
-#     set(YOYO_TRICK_BUILD_DIR ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/tricks)
+#     set(YOYO_TRICK_BUILD_DIR ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/tricks)
 #     file(MAKE_DIRECTORY ${YOYO_TRICK_BUILD_DIR})
 
-#     set(YOYO_GAME_LINK_DIR ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/lib)
-#     target_link_directories(${GAME_NAME} PRIVATE ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/tricks)
+#     set(YOYO_GAME_LINK_DIR ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/lib)
+#     target_link_directories(${GAME_NAME} PRIVATE ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/tricks)
 
 #     file(GLOB PLUGIN_DIRS CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/tricks/*")
 #     foreach(PLUGIN_DIR ${PLUGIN_DIRS})
@@ -156,7 +156,7 @@ target_link_libraries(${GAME_NAME} PRIVATE yoyoengine)
 include_directories(${CMAKE_SOURCE_DIR}/custom/include)
 
 # output the game in the bin directory
-set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME})
+set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<CONFIGURATION>)
 
 #############################################
 #             Post Build Copying            #
@@ -168,32 +168,32 @@ set_target_properties(${GAME_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_B
 
 # use cmake timestamp tracking to copy settings.yoyo as needed
 add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/settings.yoyo
+    OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/settings.yoyo
     DEPENDS ${CMAKE_SOURCE_DIR}/settings.yoyo
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/settings.yoyo ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/settings.yoyo ${CMAKE_BINARY_DIR}/$<CONFIGURATION>
     COMMENT "Copying settings.yoyo"
 )
 add_custom_target(copy_settings_yoyo ALL
-    DEPENDS ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/settings.yoyo
+    DEPENDS ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/settings.yoyo
 )
 
 # also hard coded for .yep files, generic doesnt work
 add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/engine.yep
+    OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine.yep
     DEPENDS ${CMAKE_SOURCE_DIR}/engine.yep
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/engine.yep ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/engine.yep ${CMAKE_BINARY_DIR}/$<CONFIGURATION>
     COMMENT "Copying engine.yep"
 )
 add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/resources.yep
+    OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources.yep
     DEPENDS ${CMAKE_SOURCE_DIR}/resources.yep
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/resources.yep ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/resources.yep ${CMAKE_BINARY_DIR}/$<CONFIGURATION>
     COMMENT "Copying resources.yep"
 )
 add_custom_target(copy_critical_yeps ALL
     DEPENDS 
-        ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/engine.yep
-        ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/resources.yep
+        ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine.yep
+        ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources.yep
 )
 
 #############################################
@@ -208,8 +208,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
         # COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/bin/Windows/libyoyoengine.dll.a
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/lib
 
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/tricks/* ${CMAKE_BINARY_DIR}/bin/Windows || true
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/tricks || true
+        # COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/bin/Windows/tricks/* ${CMAKE_BINARY_DIR}/bin/Windows || true
+        # COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/bin/Windows/tricks || true
 
         COMMENT "Performing Windows Cleanup ..."
     )
@@ -236,20 +236,23 @@ endif()
 # TODO: native windows run target
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_custom_target(run
-        COMMAND wine ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}.exe
+        COMMAND wine "$<TARGET_FILE:${GAME_NAME}>.exe"
         # DEPENDS ${GAME_NAME}
         COMMENT "Running the game with Wine ..."
     )
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
     add_custom_target(run
-        COMMAND emrun --no_browser --port 8080 ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME}.html
+        COMMAND emrun --no_browser --port 8080 "$<TARGET_FILE:${GAME_NAME}>.html"
         # DEPENDS ${GAME_NAME}
         COMMENT "Running the game with emrun ..."
     )
 else()
     add_custom_target(run
-        COMMAND ${CMAKE_BINARY_DIR}/bin/${CMAKE_SYSTEM_NAME}/${GAME_NAME} &
-        # DEPENDS ${GAME_NAME}
-        COMMENT "Running the game and remote copy ..."
+        # print out the full path to the game binary
+        COMMAND ${CMAKE_COMMAND} -E echo "Running game: ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${GAME_NAME}"
+
+        COMMAND "$<TARGET_FILE:${GAME_NAME}>" &
+        DEPENDS ${GAME_NAME}
+        COMMENT "Running the game ..."
     )
 endif()
