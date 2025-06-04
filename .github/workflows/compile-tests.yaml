@@ -1,0 +1,83 @@
+name: Compilation Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-linux:
+    name: Build with ${{ matrix.compiler }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        compiler: [gcc, clang]
+
+    steps:
+      - name: Install dependencies
+        run: sudo apt update && sudo apt-get install -y ${{ matrix.compiler }} cmake make libdrm-dev libgbm-dev libfreetype6-dev libharfbuzz-dev nasm
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Cache Fetchcontent
+        id: cache-fetchcontent
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/_deps/*-src
+          key: ${{ runner.os }}-${{ matrix.compiler }}-fetchcontent-${{ hashFiles('**/CMakeLists.txt') }}
+
+      - name: Configure with CMake
+        run: |
+          mkdir -p ${{ github.workspace }}/build
+          cd ${{ github.workspace }}/build
+          CC=${{ matrix.compiler }} cmake -DGAME_NAME=template -DSDL_UNIX_CONSOLE_BUILD=ON -DCMAKE_BUILD_TYPE=Debug ..
+      
+      - name: Build with ${{ matrix.compiler }}
+        run: |
+          cd ${{ github.workspace }}/build
+          cmake --build . --parallel
+  
+  build-msvc:
+      name: Build with MSVC
+      runs-on: windows-2025
+
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+          with:
+            submodules: 'recursive'
+
+        - name: Cache Fetchcontent
+          id: cache-fetchcontent
+          uses: actions/cache@v4
+          with:
+            path: ${{ github.workspace }}\build\_deps\*-src
+            key: windows-msvc-fetchcontent-${{ hashFiles('**/CMakeLists.txt') }}
+            restore-keys: |
+              windows-msvc-fetchcontent-
+            
+        - uses: ilammy/msvc-dev-cmd@v1.13.0
+
+        - name: Install pkgconfig with Chocolatey
+          run: choco install pkgconfiglite -y
+
+        - name: Set up NASM
+          uses: ilammy/setup-nasm@v1
+
+        - name: Configure with CMake
+          run: |
+            New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\build"
+            cd ${{ github.workspace }}\build
+            cmake ${{ env.CMAKE_FLAGS }} -DGAME_NAME=template -DSDL_UNIX_CONSOLE_BUILD=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_ASM_NASM_COMPILER=nasm ..
+        
+        - name: Build with MSVC
+          run: |
+            cd ${{ github.workspace }}\build
+            cmake --build . --parallel

@@ -35,7 +35,6 @@ set(CMAKE_C_FLAGS "" CACHE STRING "C flags to be used in the build")
 
 message(STATUS "Configuring for target platform: ${CMAKE_SYSTEM_NAME}")
 
-# Engine does this implicitly, but some platforms require this here
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
@@ -181,24 +180,25 @@ add_custom_target(copy_settings_yoyo ALL
     DEPENDS ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/settings.yoyo
 )
 
-# also hard coded for .yep files, generic doesnt work
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine.yep
-    DEPENDS ${CMAKE_SOURCE_DIR}/engine.yep
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/engine.yep ${CMAKE_BINARY_DIR}/$<CONFIGURATION>
-    COMMENT "Copying engine.yep"
-)
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources.yep
-    DEPENDS ${CMAKE_SOURCE_DIR}/resources.yep
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/resources.yep ${CMAKE_BINARY_DIR}/$<CONFIGURATION>
-    COMMENT "Copying resources.yep"
-)
-add_custom_target(copy_critical_yeps ALL
-    DEPENDS 
-        ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine.yep
-        ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources.yep
-)
+# TODO: FIXME: RYAN SOON
+# # also hard coded for .yep files, generic doesnt work
+# add_custom_command(
+#     OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine.yep
+#     DEPENDS ${CMAKE_SOURCE_DIR}/engine.yep
+#     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/engine.yep ${CMAKE_BINARY_DIR}/$<CONFIGURATION>
+#     COMMENT "Copying engine.yep"
+# )
+# add_custom_command(
+#     OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources.yep
+#     DEPENDS ${CMAKE_SOURCE_DIR}/resources.yep
+#     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/resources.yep ${CMAKE_BINARY_DIR}/$<CONFIGURATION>
+#     COMMENT "Copying resources.yep"
+# )
+# add_custom_target(copy_critical_yeps ALL
+#     DEPENDS 
+#         ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine.yep
+#         ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources.yep
+# )
 
 #############################################
 #                  Cleanup                  #

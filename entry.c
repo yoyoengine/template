@@ -39,30 +39,24 @@ static void mainloop(void){
     }
 }
 
-#ifdef __WIN32__
-int main(int argc, char *argv[]){
-#else
-void main(void){
-#endif
+int main(int argc, char *argv[]) {
     YG_RUNNING = true;
 
-    // register any user callbacks
     yoyo_register_callbacks();
 
-    // initialize engine
     ye_init_engine();
 
-    #ifdef __EMSCRIPTEN__
-        emscripten_set_main_loop(mainloop, 0, 1);
-    #else
-        while(true){mainloop();}
-    #endif
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(mainloop, 0, 1);
+#else
+    while (1) { mainloop(); }
+#endif
+
+    return 0;
 }
 
 #ifdef _WIN32
-    int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-    {
-        // Call the main function
-        return main(__argc, __argv);
-    }
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    return main(__argc, __argv);
+}
 #endif
