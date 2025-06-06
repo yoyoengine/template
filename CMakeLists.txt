@@ -53,6 +53,32 @@ if(NOT DEFINED YOYO_ENGINE_BUILD_TAG)
 endif()
 
 #############################################
+#                 Setup Yep                 #
+#############################################
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON CACHE BOOL "Build with position independent code" FORCE)
+
+FetchContent_Declare(
+    yep
+    GIT_REPOSITORY https://github.com/yoyoengine/yep.git
+    GIT_TAG main # TODO: Pin when ready
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(yep)
+
+# # TODO NEEDS TO CHANGE WHEN WE STOP PUTTING USELESS THINGS IN BUILD DIR
+# # set(YEP_BUILD_BIN "${yep_BINARY_DIR}/yep" CACHE STRING "Path to the yep binary")
+set(YEP_BUILD_BIN "${CMAKE_BINARY_DIR}/yep" CACHE STRING "Path to the yep binary")
+
+include("${yep_SOURCE_DIR}/cmake/yep.cmake")
+
+# # test: add a target which runs yep with no args
+# add_custom_target(yep_test
+#     COMMAND ${YEP_BUILD_BIN}
+#     COMMENT "Testing yep binary ..."
+# )
+
+#############################################
 #               Configure Game              #
 #############################################
 
@@ -85,6 +111,9 @@ endif()
 # Build the game
 file(GLOB_RECURSE SOURCES CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/custom/src/*.c)
 
+# position independent code
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 ## rpath on linux ##
 SET(CMAKE_SKIP_BUILD_RPATH FALSE)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
@@ -113,6 +142,7 @@ else()
     )
     FetchContent_MakeAvailable(yoyoengine)
     add_subdirectory(${yoyoengine_SOURCE_DIR}/engine yoyoengine)
+    set(YOYO_ENGINE_SOURCE_DIR ${yoyoengine_SOURCE_DIR} CACHE PATH "Path to the yoyoengine source directory" FORCE)
 endif()
 
 # set some emscripten specific build flags
@@ -231,6 +261,24 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
 else()
     # default
 endif()
+
+#############################################
+#              Asset Packing                #
+#############################################
+
+pack_resources(
+    "${YOYO_ENGINE_SOURCE_DIR}/engine/dist/resources"
+    "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine.yep"
+    engine_resources_yep
+)
+add_dependencies(${GAME_NAME} engine_resources_yep)
+
+pack_resources(
+    "${CMAKE_SOURCE_DIR}/resources"
+    "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/resources.yep"
+    game_resources_yep
+)
+add_dependencies(${GAME_NAME} game_resources_yep)
 
 #############################################
 #                  Custom                   #
