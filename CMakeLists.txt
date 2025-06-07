@@ -267,7 +267,7 @@ endif()
 #############################################
 
 pack_resources(
-    "${YOYO_ENGINE_SOURCE_DIR}/engine/dist/resources"
+    "${YOYO_ENGINE_SOURCE_DIR}/dist/resources"
     "${CMAKE_BINARY_DIR}/$<CONFIGURATION>/engine.yep"
     engine_resources_yep
 )
