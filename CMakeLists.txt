@@ -40,7 +40,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 # Game build flags
 set(GAME_NAME "yoyoengine_game" CACHE STRING "The name of the game")
-set(GAME_RC_PATH "" CACHE STRING "The path to the rc icon file")
+set(GAME_RC_PATH "icon/icon.rc" CACHE STRING "The path to the rc icon file")
 
 # TODO: disabled because we are phasing out yoyolua api
 # we don't build the lua runtime from the game,
@@ -71,12 +71,6 @@ FetchContent_MakeAvailable(yep)
 set(YEP_BUILD_BIN "${CMAKE_BINARY_DIR}/yep" CACHE STRING "Path to the yep binary")
 
 include("${yep_SOURCE_DIR}/cmake/yep.cmake")
-
-# # test: add a target which runs yep with no args
-# add_custom_target(yep_test
-#     COMMAND ${YEP_BUILD_BIN}
-#     COMMENT "Testing yep binary ..."
-# )
 
 #############################################
 #               Configure Game              #
@@ -121,13 +115,20 @@ SET(CMAKE_INSTALL_RPATH $ORIGIN)
 # SET(CMAKE_INSTALL_RPATH $ORIGIN/lib)
 ####################
 
+if(MSVC)
+    add_executable(${GAME_NAME} WIN32 ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
+    set(SUBSYSTEM_LINKER_OPTIONS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+else()
+    add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
+endif()
+
 # TODO: re-evaluate if this is needed (we removed net)
 # # force SDL_net specifically to not think we are unix
-# if(MSVC)
+if(MSVC)
+    enable_language(RC)
+    #target_link_options(${GAME_NAME} PRIVATE -mwindows)
 #     add_compile_definitions(WIN32)
-# endif()
-
-add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
+endif()
 
 # We either use a local copy, or grab the engine from the specified tag
 if(YOYO_ENGINE_SOURCE_DIR)
@@ -209,6 +210,7 @@ add_custom_command(
 add_custom_target(copy_settings_yoyo ALL
     DEPENDS ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/settings.yoyo
 )
+add_dependencies(${GAME_NAME} copy_settings_yoyo)
 
 # TODO: FIXME: RYAN SOON
 # # also hard coded for .yep files, generic doesnt work
