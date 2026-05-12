@@ -7,5 +7,6 @@
     "rc_path":"",
     "use_local_engine":false,
     "local_engine_path":"",
+    "executable_path":"",
     "delete_cache":true
 }
