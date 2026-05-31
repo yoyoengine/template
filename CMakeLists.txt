@@ -40,8 +40,12 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 # Game build flags
 set(GAME_NAME "yoyoengine_game" CACHE STRING "The name of the game")
-set(GAME_RC_PATH "icon/icon.rc" CACHE STRING "The path to the rc icon file")
-file(TO_CMAKE_PATH "${GAME_RC_PATH}" GAME_RC_PATH)
+set(GAME_RC_PATH "" CACHE STRING "Path to .rc icon file (optional, Windows only)")
+set(GAME_RC_SOURCES "")
+if(WIN32 AND GAME_RC_PATH)
+    file(TO_CMAKE_PATH "${GAME_RC_PATH}" _rc_normalized)
+    set(GAME_RC_SOURCES "${_rc_normalized}")
+endif()
 
 # TODO: disabled because we are phasing out yoyolua api
 # we don't build the lua runtime from the game,
@@ -121,17 +125,19 @@ SET(CMAKE_INSTALL_RPATH $ORIGIN)
 ####################
 
 if(MSVC)
+    if(GAME_RC_SOURCES)
+        enable_language(RC)
+    endif()
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         # Console subsystem on Debug -- stdout/stderr visible during development
-        add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
+        add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_SOURCES})
     else()
         # GUI subsystem on Release -- no console window
-        add_executable(${GAME_NAME} WIN32 ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
+        add_executable(${GAME_NAME} WIN32 ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_SOURCES})
         target_link_options(${GAME_NAME} PRIVATE /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
     endif()
-    enable_language(RC)
 else()
-    add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_PATH})
+    add_executable(${GAME_NAME} ${CMAKE_SOURCE_DIR}/entry.c ${SOURCES} ${GAME_RC_SOURCES})
 endif()
 
 # We either use a local copy, or grab the engine from the specified tag
