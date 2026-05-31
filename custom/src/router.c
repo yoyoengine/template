@@ -1,6 +1,6 @@
 /*
     This file is derived from a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -17,7 +17,7 @@
     yoyo_register_callbacks is called once on init, and lets you
     give the engine function pointers to your custom functions.
 
-    Unless you set these to persistant, they will be unlinked after a
+    Unless you set these to persistent, they will be unlinked after a
     scene load.
 
     I've populated some stubs and examples for you below.

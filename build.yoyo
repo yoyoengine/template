@@ -1,9 +1,9 @@
 {
     "IMPORTANT NOTICE":"DO NOT EDIT THESE DIRECTLY OR DELETE THEM, PLEASE CONFIGURE PROJECTS THROUGH THE EDITOR (unless you are going to programatically change these and know what youre doing.",
 
-    "platform":"linux",
-    "core_tag":"build-0",
-    "cflags":"-Wall -Wextra -g",
+    "platform":"windows",
+    "core_tag":"main",
+    "cflags":"",
     "rc_path":"",
     "use_local_engine":false,
     "local_engine_path":"",

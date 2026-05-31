@@ -1,6 +1,6 @@
 /*
     This file is a part of yoyoengine. (https://github.com/zoogies/yoyoengine)
-    Copyright (C) 2023-2025  Ryan Zmuda
+    Copyright (C) 2023-2026  Ryan Zmuda
 
     Licensed under the MIT license. See LICENSE file in the project root for details.
 */
@@ -8,8 +8,8 @@
 /*
     WARNING: PLEASE DO NOT MODIFY THIS FILE UNLESS YOU KNOW WHAT YOU ARE DOING!
 
-    Any custom behavior you want to implement can be done in `custom/*`.
-    Please reference <https://zoogies.github.io/yoyoengine>.
+    Any custom behavior you want to implement can be done in `custom/*` with
+    the engine callback system.
 */
 
 #include <yoyoengine/yoyoengine.h>

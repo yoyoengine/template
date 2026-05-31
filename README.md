@@ -24,7 +24,3 @@ If you created this project through yoyoeditor, this will reside inside a direct
     - `git commit -m "Initial commit"`
 4. Push the project
     - `git push -u origin main`
-
-## TODO
-
-Note to self, populate this file with some more interesting information about the template and project structure of yoyoengine games.
